@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">GuideCane</string>
+    <string name="user_name">User Name</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="add_geofencing_point">Add Geofencing Point</string>
+    <string name="geofencing_points">Geofencing Points</string>
+    <string name="wifi_name">WiFi Name</string>
+    <string name="wifi_password">WiFi Password</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="cancel">Cancel</string>
+    <string name="real_time_location">Real-Time Location</string>
+    <string name="geofencing_status">Geofencing Status</string>
+    <string name="historical_data">Historical Location Data</string>
+    <string name="battery_status">Battery Status</string>
+    <string name="emergency_alert">Emergency Alert! Immediate Attention Required</string>
+    <string name="no_emergency">No Emergency</string>
+    <string name="view_details">View Details</string>
+    <string name="details_title">Details of Notifications</string>
+    <string name="location_history">Real-Time Location History</string>
+    <string name="geofencing_history">Geofencing History</string>
+    <string name="battery_history">Battery Status History</string>
+    <string name="emergency_alert_history">Emergency Alerts History</string>
+    <string name="dismiss">Dismiss</string>
+</resources>
