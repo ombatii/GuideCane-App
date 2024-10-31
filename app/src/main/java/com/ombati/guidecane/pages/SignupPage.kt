@@ -23,8 +23,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.ombati.guidecane.AuthState
-import com.ombati.guidecane.AuthViewModel
+import com.ombati.guidecane.viewmodel.AuthState
+import com.ombati.guidecane.viewmodel.AuthViewModel
 
 @Composable
 fun SignupPage(

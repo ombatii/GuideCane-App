@@ -21,8 +21,7 @@ fun AppBottomNavigation(navController: NavController) {
     val items = listOf(
         NavItem.Home,
         NavItem.Profile,
-        NavItem.Notification,
-        NavItem.Settings
+        NavItem.Notification
     )
 
     BottomAppBar(

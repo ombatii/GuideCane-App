@@ -2,9 +2,12 @@ package com.ombati.guidecane.pages
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.navigation.NavController
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,98 +16,147 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.navigation.NavController
-
+import com.ombati.guidecane.viewmodel.UserViewModel
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(navController: NavController, userViewModel: UserViewModel = hiltViewModel()) {
+    val userProfiles by userViewModel.userProfiles.collectAsState()
+    val isLoading by userViewModel.isLoading.collectAsState()
+    val errorMessage by userViewModel.errorMessage.collectAsState()
+
+    LaunchedEffect(Unit) {
+        userViewModel.fetchUserProfiles()
+    }
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                // Navigate to the AddUserScreen when the button is clicked
                 navController.navigate("add_user")
             }) {
                 Icon(Icons.Filled.Add, contentDescription = "Add")
             }
         },
         content = { innerPadding ->
-            LazyColumn(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .padding(16.dp)
             ) {
-                // Repeating the card for default values
-                items(2) {
-                    ProfileCard(navController = navController)
+                when {
+                    isLoading -> {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                    userProfiles.isEmpty() -> { // Show NoUserMessage if there are no profiles
+                        NoUserMessage()
+                    }
+                    else -> {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            items(userProfiles) { profile ->
+                                ProfileCard(
+                                    smartCaneID = profile.smartCaneID,
+                                    location = profile.location,
+                                    batteryLevel = profile.batteryLevel.toFloatOrNull() ?: 0f, // Convert battery level to Float, defaulting to 0f if null or invalid
+                                    geoFencing = profile.geoFencing,
+                                    caregiverNumber = profile.caregiverNumber,
+                                    emergencyStatus = profile.emergencyStatus,
+                                    navController = navController,
+                                    onDelete = {
+                                        userViewModel.deleteUserProfile(profile.smartCaneID)
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
     )
 }
 
+
 @Composable
-fun ProfileCard(navController: NavController) {
+fun ProfileCard(
+    smartCaneID: String,
+    location: String,
+    batteryLevel: Float, // Change batteryLevel type to Float
+    geoFencing: String,
+    caregiverNumber: String,
+    emergencyStatus: String,
+    navController: NavController,
+    onDelete: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(4.dp) // Material3 elevation style
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // Name of the person
-            Text(
-                text = "Brian",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Text(text = "Smart Cane ID: $smartCaneID", fontSize = 24.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
-            // Location (Latitude, Longitude)
-            Text(
-                text = "Latitude: -1.286389, Longitude: 36.817223",
-                fontSize = 14.sp,
-                color = Color.LightGray
+            Text(text = "Location: $location", fontSize = 14.sp, color = Color.LightGray)
+            Text(text = "GeoFencing: $geoFencing", fontSize = 14.sp, color = Color.LightGray)
+            Text(text = "Caregiver Number: $caregiverNumber", fontSize = 14.sp, color = Color.LightGray)
+            Text(text = "Emergency Status: $emergencyStatus", fontSize = 14.sp, color = Color.LightGray)
+
+            // Display battery level using a progress bar
+            Text(text = "Battery Level: ${batteryLevel.toInt()}%", fontSize = 14.sp, color = Color.LightGray)
+            LinearProgressIndicator(
+                progress = batteryLevel / 100f, // Use Float division
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .padding(top = 4.dp),
+                color = when {
+                    batteryLevel > 20 -> Color.Green // Color for battery levels above 20%
+                    batteryLevel > 0 -> Color.Yellow // Color for battery levels between 1% and 20%
+                    else -> Color.Red // Color for 0% battery
+                },
+                trackColor = Color.LightGray // Track color for the progress bar background
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            // Battery Status with ProgressBar
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "Battery Status: 56%")
-                Spacer(modifier = Modifier.width(8.dp))
-                LinearProgressIndicator(
-                    progress = 0.56f,
-                    modifier = Modifier
-                        .height(8.dp)
-                        .width(150.dp),
-                    color = Color.Green
-                )
-            }
+
             Spacer(modifier = Modifier.height(16.dp))
-            // Buttons: Update and Delete
+
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Button(onClick = {
-                    // Navigate to the UpdateScreen when the "Update" button is clicked
-                    navController.navigate("update_user")
+                    navController.navigate("edit_user/$smartCaneID")
                 }) {
-                    Text(text = "Update")
+                    Text("Edit")
                 }
-                Spacer(modifier = Modifier.width(8.dp))
                 Button(
-                    onClick = { /* Delete action */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red) // containerColor replaces backgroundColor
+                    onClick = { onDelete() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                 ) {
-                    Text(text = "Delete")
+                    Text("Delete", color = Color.White)
                 }
             }
         }
+    }
+}
+
+
+
+@Composable
+fun NoUserMessage() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "No user profiles found.",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Gray
+        )
     }
 }

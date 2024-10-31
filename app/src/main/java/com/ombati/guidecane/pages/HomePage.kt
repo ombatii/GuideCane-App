@@ -1,14 +1,9 @@
 package com.ombati.guidecane.pages
 
 import UpdateScreen
-import android.os.Bundle
 import android.util.Log
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -21,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -35,8 +29,8 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
-import com.ombati.guidecane.AuthState
-import com.ombati.guidecane.AuthViewModel
+import com.ombati.guidecane.viewmodel.AuthState
+import com.ombati.guidecane.viewmodel.AuthViewModel
 import com.ombati.guidecane.nav.AppBottomNavigation
 import com.ombati.guidecane.nav.NavItem
 
@@ -44,17 +38,9 @@ private const val TAG = "DeKUTMapActivity"
 
 @Composable
 fun HomePage(
-    authViewModel: AuthViewModel
-) {
-    val authState = authViewModel.authState.observeAsState()
-    val navController = rememberNavController()
 
-    LaunchedEffect(authState.value) {
-        when (authState.value) {
-            is AuthState.Unauthenticated -> navController.navigate("login")
-            else -> Unit
-        }
-    }
+) {
+    val navController = rememberNavController()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -81,9 +67,6 @@ fun HomePage(
                     }
                     composable(NavItem.Notification.route) {
                         NotificationScreen(navController = navController)
-                    }
-                    composable(NavItem.Settings.route) {
-                        SettingsScreen(navController = navController, authViewModel = authViewModel)
                     }
                     composable("add_user") {
                         AddUserScreen(navController = navController)

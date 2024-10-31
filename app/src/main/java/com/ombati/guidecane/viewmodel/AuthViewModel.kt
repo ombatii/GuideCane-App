@@ -1,4 +1,4 @@
-package com.ombati.guidecane
+package com.ombati.guidecane.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,9 +7,6 @@ import com.google.firebase.auth.FirebaseAuth
 
 class AuthViewModel : ViewModel() {
     private val auth : FirebaseAuth = FirebaseAuth.getInstance()
-
-
-
     private val _authState = MutableLiveData<AuthState>()
     val authState: LiveData<AuthState> = _authState
 
@@ -39,7 +36,8 @@ class AuthViewModel : ViewModel() {
                 if (task.isSuccessful){
                     _authState.value = AuthState.Authenticated
                 }else{
-                    _authState.value = AuthState.Error(task.exception?.message?:"Something went wrong")
+                    _authState.value =
+                        AuthState.Error(task.exception?.message ?: "Something went wrong")
                 }
             }
     }
@@ -56,7 +54,8 @@ class AuthViewModel : ViewModel() {
                 if (task.isSuccessful){
                     _authState.value = AuthState.Authenticated
                 }else{
-                    _authState.value = AuthState.Error(task.exception?.message?:"Something went wrong")
+                    _authState.value =
+                        AuthState.Error(task.exception?.message ?: "Something went wrong")
                 }
             }
     }

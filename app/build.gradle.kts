@@ -5,7 +5,15 @@ plugins {
 
     // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
+
+    id("com.google.devtools.ksp") version "1.9.0-1.0.12"
+
 }
+
+
+
 
 android {
     namespace = "com.ombati.guidecane"
@@ -100,4 +108,31 @@ dependencies {
     // ViewModel and LiveData for MVVM architecture
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07")
     implementation("androidx.lifecycle:lifecycle-livedata:2.3.1")
+
+    // Hilt
+    val hiltVersion = "2.46.1"
+    implementation("com.google.dagger:hilt-android:$hiltVersion")
+    kapt("com.google.dagger:hilt-android-compiler:$hiltVersion")
+
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    // Lottie
+    implementation("com.airbnb.android:lottie-compose:5.2.0")
+
+    // Coroutines Play Services
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.4.1")
+
+    implementation("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+
+
+    //Room
+    implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
+    ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
+    implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
+}
+
+kapt {
+    correctErrorTypes = true
 }
